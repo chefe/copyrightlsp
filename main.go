@@ -9,6 +9,7 @@ import (
 
 	"github.com/chefe/copyrightlsp/lsp"
 	"github.com/chefe/copyrightlsp/rpc"
+	"github.com/chefe/copyrightlsp/state"
 )
 
 func main() {
@@ -20,6 +21,8 @@ func main() {
 
 	writer := os.Stdout
 
+	state := state.NewState()
+
 	for scanner.Scan() {
 		msg := scanner.Bytes()
 		method, content, err := rpc.DecodeMessage(msg)
@@ -28,17 +31,22 @@ func main() {
 			continue
 		}
 
-		handleMessage(logger, writer, method, content)
+		handleMessage(logger, writer, state, method, content)
 	}
 }
 
-func handleMessage(logger *log.Logger, writer io.Writer, method string, content []byte) {
+func handleMessage(logger *log.Logger, writer io.Writer, state state.State, method string, content []byte) {
 	logger.Printf("recived message with method '%s'\n", method)
 
 	switch method {
 	case "initialize":
 		handleInitializeMessage(logger, writer, content)
-		logger.Println("sent the 'initialize' response")
+	case "textDocument/didOpen":
+		handleTextDocumentDidOpenMessage(logger, state, content)
+	case "textDocument/didChange":
+		handleTextDocumentDidChangeMessage(logger, state, content)
+	case "textDocument/didClose":
+		handleTextDocumentDidCloseMessage(logger, state, content)
 	}
 }
 
@@ -55,6 +63,40 @@ func handleInitializeMessage(logger *log.Logger, writer io.Writer, message []byt
 
 	logger.Printf("connected to %s (Version: %s)\n", request.Params.ClientInfo.Name, clientVersion)
 	replyMessage(logger, writer, lsp.NewInitializeResponse(request.ID))
+	logger.Println("sent the 'initialize' response")
+}
+
+func handleTextDocumentDidOpenMessage(logger *log.Logger, state state.State, message []byte) {
+	var request lsp.DidOpenTextDocumentNotification
+	if err := json.Unmarshal(message, &request); err != nil {
+		logger.Printf("recived invalid 'textDocument/didOpen' message: %s\n", err)
+	}
+
+	state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
+	logger.Printf("opend document %s\n", request.Params.TextDocument.URI)
+}
+
+func handleTextDocumentDidChangeMessage(logger *log.Logger, state state.State, message []byte) {
+	var request lsp.DidChangeTextDocumentNotification
+	if err := json.Unmarshal(message, &request); err != nil {
+		logger.Printf("recived invalid 'textDocument/didChange' message: %s\n", err)
+	}
+
+	for _, change := range request.Params.ContentChanges {
+		state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+	}
+
+	logger.Printf("changed document %s\n", request.Params.TextDocument.URI)
+}
+
+func handleTextDocumentDidCloseMessage(logger *log.Logger, state state.State, message []byte) {
+	var request lsp.DidCloseTextDocumentNotification
+	if err := json.Unmarshal(message, &request); err != nil {
+		logger.Printf("recived invalid 'textDocument/didClose' message: %s\n", err)
+	}
+
+	state.CloseDocument(request.Params.TextDocument.URI)
+	logger.Printf("closed document %s\n", request.Params.TextDocument.URI)
 }
 
 func replyMessage(logger *log.Logger, writer io.Writer, message any) {
