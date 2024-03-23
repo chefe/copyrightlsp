@@ -1,17 +1,20 @@
 package lsp
 
 type IntitializeRequest struct {
-	Params IntitializeRequestParams `json:"params"`
+	Params IntitializeParams `json:"params"`
 	Request
 }
 
-type IntitializeRequestParams struct {
+type IntitializeParams struct {
+	// Information about the client.
 	ClientInfo *ClientInfo `json:"clientInfo"`
 }
 
 type ClientInfo struct {
+	// The client's version as defined by the client.
 	Version *string `json:"version,omitempty"`
-	Name    string  `json:"name"`
+	// The name of the client as defined by the client.
+	Name string `json:"name"`
 }
 
 type IntitializeResponse struct {
@@ -20,34 +23,43 @@ type IntitializeResponse struct {
 }
 
 type IntitializeResult struct {
-	ServerInfo   ServerInfo         `json:"serverInfo"`
+	// Information about the server.
+	ServerInfo ServerInfo `json:"serverInfo"`
+	// The capabilities the language server provides.
 	Capabilities ServerCapabilities `json:"capabilities"`
 }
 
 type ServerCapabilities struct {
-	TextDocumentSync   TextDocumentSyncKind `json:"textDocumentSync"`
-	CodeActionProvider bool                 `json:"codeActionProvider"`
+	// Defines how text documents are synced.
+	TextDocumentSync TextDocumentSyncKind `json:"textDocumentSync"`
+	// The server provides code actions.
+	CodeActionProvider bool `json:"codeActionProvider"`
 }
 
 type ServerInfo struct {
-	Name    string `json:"name"`
+	// The name of the server as defined by the server.
+	Name string `json:"name"`
+	// The server's version as defined by the server.
 	Version string `json:"version"`
 }
 
+// Defines how the host (editor) should sync document changes to the language
+// server.
 type TextDocumentSyncKind int
 
 const (
-	TextDocumentSyncKindNone        TextDocumentSyncKind = 0
-	TextDocumentSyncKindFull        TextDocumentSyncKind = 1
+	// Documents should not be synced at all.
+	TextDocumentSyncKindNone TextDocumentSyncKind = 0
+	// Documents are synced by always sending the full content of the document.
+	TextDocumentSyncKindFull TextDocumentSyncKind = 1
+	// Documents are synced by sending the full content on open. After that only
+	// incremental updates to the document are sent.
 	TextDocumentSyncKindIncremental TextDocumentSyncKind = 2
 )
 
 func NewInitializeResponse(id int) IntitializeResponse {
 	return IntitializeResponse{
-		Response: Response{
-			ID:  &id,
-			RPC: "2.0",
-		},
+		Response: NewResponse(id),
 		Result: IntitializeResult{
 			Capabilities: ServerCapabilities{
 				TextDocumentSync:   TextDocumentSyncKindFull,

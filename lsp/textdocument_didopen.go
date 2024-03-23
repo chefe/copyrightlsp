@@ -6,5 +6,6 @@ type DidOpenTextDocumentNotification struct {
 }
 
 type DidOpenTextDocumentParams struct {
+	// The document that was opened.
 	TextDocument TextDocumentItem `json:"textDocument"`
 }

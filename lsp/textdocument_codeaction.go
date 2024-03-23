@@ -6,8 +6,10 @@ type CodeActionRequest struct {
 }
 
 type CodeActionParams struct {
+	// The document in which the command was invoked.
 	TextDocument TextDocumentIdentifier `json:"textDocument"`
-	Range        Range                  `json:"range"`
+	//  The range for which the command was invoked.
+	Range Range `json:"range"`
 }
 
 type CodeActionResponse struct {
@@ -24,7 +26,7 @@ type CodeAction struct {
 
 func NewCodeActionResponse(id int, actions []CodeAction) CodeActionResponse {
 	return CodeActionResponse{
-		Response: Response{ID: &id, RPC: "2.0"},
+		Response: NewResponse(id),
 		Result:   actions,
 	}
 }

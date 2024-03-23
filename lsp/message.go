@@ -1,17 +1,35 @@
 package lsp
 
+// The language server protocol always uses "2.0" as the jsonrpc version
+const jsonRpcVersion = "2.0"
+
 type Request struct {
-	RPC    string `json:"jsonrpc"`
+	// The version of "jsonrpc" to use.
+	RPC string `json:"jsonrpc"`
+	//  The method to be invoked.
 	Method string `json:"method"`
-	ID     int    `json:"id"`
+	// The request id.
+	ID int `json:"id"`
 }
 
 type Response struct {
-	ID  *int   `json:"id,omitempty"`
+	// The request id.
+	ID *int `json:"id,omitempty"`
+	// The version of "jsonrpc" to use.
 	RPC string `json:"jsonrpc"`
 }
 
 type Notification struct {
-	RPC    string `json:"jsonrpc"`
+	// The version of "jsonrpc" to use.
+	RPC string `json:"jsonrpc"`
+	//  The method to be invoked.
 	Method string `json:"method"`
+}
+
+func NewResponse(id int) Response {
+	return Response{ID: &id, RPC: jsonRpcVersion}
+}
+
+func NewNotification(method string) Notification {
+	return Notification{RPC: jsonRpcVersion, Method: method}
 }

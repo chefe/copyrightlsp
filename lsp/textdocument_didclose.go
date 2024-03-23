@@ -6,5 +6,6 @@ type DidCloseTextDocumentNotification struct {
 }
 
 type DidCloseTextDocumentParams struct {
+	// The document that was closed.
 	TextDocument TextDocumentIdentifier `json:"textDocument"`
 }
