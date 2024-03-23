@@ -47,6 +47,8 @@ func handleMessage(logger *log.Logger, writer io.Writer, state state.State, meth
 		handleTextDocumentDidChangeMessage(logger, state, content)
 	case "textDocument/didClose":
 		handleTextDocumentDidCloseMessage(logger, state, content)
+	case "textDocument/codeAction":
+		handleTextDocumentCodeActionMessage(logger, writer, state, content)
 	}
 }
 
@@ -97,6 +99,17 @@ func handleTextDocumentDidCloseMessage(logger *log.Logger, state state.State, me
 
 	state.CloseDocument(request.Params.TextDocument.URI)
 	logger.Printf("closed document %s\n", request.Params.TextDocument.URI)
+}
+
+func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, state state.State, message []byte) {
+	var request lsp.CodeActionRequest
+	if err := json.Unmarshal(message, &request); err != nil {
+		logger.Printf("recived invalid 'textDocument/codeAction' message: %s\n", err)
+	}
+
+	actions := state.CalculateCodeActions(request.Params.TextDocument.URI, request.Params.Range.Start, request.Params.Range.End)
+	logger.Printf("calculated %d code actions for %s\n", len(actions), request.Params.TextDocument.URI)
+	replyMessage(logger, writer, lsp.NewCodeActionResponse(request.ID, actions))
 }
 
 func replyMessage(logger *log.Logger, writer io.Writer, message any) {

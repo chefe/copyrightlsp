@@ -25,7 +25,8 @@ type IntitializeResult struct {
 }
 
 type ServerCapabilities struct {
-	TextDocumentSync TextDocumentSyncKind `json:"textDocumentSync"`
+	TextDocumentSync   TextDocumentSyncKind `json:"textDocumentSync"`
+	CodeActionProvider bool                 `json:"codeActionProvider"`
 }
 
 type ServerInfo struct {
@@ -49,7 +50,8 @@ func NewInitializeResponse(id int) IntitializeResponse {
 		},
 		Result: IntitializeResult{
 			Capabilities: ServerCapabilities{
-				TextDocumentSync: TextDocumentSyncKindFull,
+				TextDocumentSync:   TextDocumentSyncKindFull,
+				CodeActionProvider: true,
 			},
 			ServerInfo: ServerInfo{
 				Name:    "copyrightlsp",
