@@ -31,6 +31,11 @@ func main() {
 			continue
 		}
 
+		if method == "exit" {
+			logger.Println("recived the 'exit' request")
+			return
+		}
+
 		handleMessage(logger, writer, state, method, content)
 	}
 }
@@ -41,6 +46,8 @@ func handleMessage(logger *log.Logger, writer io.Writer, state state.State, meth
 	switch method {
 	case "initialize":
 		handleInitializeMessage(logger, writer, content)
+	case "shutdown":
+		handleShutdownMessage(logger, writer, content)
 	case "textDocument/didOpen":
 		handleTextDocumentDidOpenMessage(logger, state, content)
 	case "textDocument/didChange":
@@ -66,6 +73,17 @@ func handleInitializeMessage(logger *log.Logger, writer io.Writer, message []byt
 	logger.Printf("connected to %s (Version: %s)\n", request.Params.ClientInfo.Name, clientVersion)
 	replyMessage(logger, writer, lsp.NewInitializeResponse(request.ID))
 	logger.Println("sent the 'initialize' response")
+}
+
+func handleShutdownMessage(logger *log.Logger, writer io.Writer, message []byte) {
+	var request lsp.ShutdownRequest
+	if err := json.Unmarshal(message, &request); err != nil {
+		logger.Printf("recived invalid 'shutdown' message: %s\n", err)
+	}
+
+	logger.Println("shudown")
+	replyMessage(logger, writer, lsp.NewShudownResponse(request.ID))
+	logger.Println("sent the 'shutdown' response")
 }
 
 func handleTextDocumentDidOpenMessage(logger *log.Logger, state state.State, message []byte) {
