@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"io"
 	"log"
 	"os"
@@ -14,7 +15,15 @@ import (
 )
 
 func main() {
-	logger := getLogger("/tmp/copyrightlsp.log")
+	logFile := flag.String("logFile", "", "log message to the given file")
+	flag.Parse()
+
+	logWriter := io.Discard
+	if len(*logFile) > 0 {
+		logWriter = createLogFileWriter(*logFile)
+	}
+
+	logger := log.New(logWriter, "[copyrightlsp]", log.Ldate|log.Ltime|log.Lshortfile)
 	logger.Println("started copyrightlsp")
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -151,11 +160,11 @@ func replyMessage(logger *log.Logger, writer io.Writer, message any) {
 	}
 }
 
-func getLogger(filename string) *log.Logger {
+func createLogFileWriter(filename string) io.Writer {
 	logFile, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
-		panic("failed to open the log file")
+		panic("failed to open or create the log file")
 	}
 
-	return log.New(logFile, "[copyrightlsp]", log.Ldate|log.Ltime|log.Lshortfile)
+	return logFile
 }
