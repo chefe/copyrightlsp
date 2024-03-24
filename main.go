@@ -92,8 +92,8 @@ func handleTextDocumentDidOpenMessage(logger *log.Logger, state state.State, mes
 		logger.Printf("recived invalid 'textDocument/didOpen' message: %s\n", err)
 	}
 
-	state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
-	logger.Printf("opend document %s\n", request.Params.TextDocument.URI)
+	state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text, request.Params.TextDocument.LanguageID)
+	logger.Printf("opend document %s [%s]\n", request.Params.TextDocument.URI, request.Params.TextDocument.LanguageID)
 }
 
 func handleTextDocumentDidChangeMessage(logger *log.Logger, state state.State, message []byte) {

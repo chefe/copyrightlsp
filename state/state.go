@@ -8,23 +8,39 @@ import (
 	"github.com/chefe/copyrightlsp/lsp"
 )
 
+type documentInfo struct {
+	Language string
+	Content  string
+}
+
 type State struct {
-	// Map file names to contents
-	Documents map[string]string
+	// Map file names to document infos
+	Documents map[string]documentInfo
 }
 
 func NewState() State {
 	return State{
-		Documents: map[string]string{},
+		Documents: map[string]documentInfo{},
 	}
 }
 
-func (s *State) OpenDocument(document, text string) {
-	s.Documents[document] = text
+func (s *State) OpenDocument(document, text, language string) {
+	s.Documents[document] = documentInfo{
+		Language: language,
+		Content:  text,
+	}
 }
 
 func (s *State) UpdateDocument(document, text string) {
-	s.Documents[document] = text
+	doc, ok := s.Documents[document]
+	if !ok {
+		return
+	}
+
+	s.Documents[document] = documentInfo{
+		Language: doc.Language,
+		Content:  text,
+	}
 }
 
 func (s *State) CloseDocument(document string) {
@@ -37,12 +53,12 @@ func buildCopyrightLine(template string) string {
 }
 
 func (s *State) CalculateCodeActions(document string, start lsp.Position, end lsp.Position) []lsp.CodeAction {
-	text, ok := s.Documents[document]
+	doc, ok := s.Documents[document]
 	if !ok {
 		return []lsp.CodeAction{}
 	}
 
-	lines := strings.Split(text, "\n")
+	lines := strings.Split(doc.Content, "\n")
 	actions := []lsp.CodeAction{}
 
 	limit := 10
