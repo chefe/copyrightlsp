@@ -23,13 +23,9 @@ type State struct {
 }
 
 func NewState() State {
-	templates := map[string][]string{}
-	templates["markdown"] = []string{"<!-- Copyright (C) {year} MARKDOWN -->"}
-	templates["sh"] = []string{"# Copyright (C) {year} SHELLSCRIPT"}
-
 	return State{
 		Documents: map[string]documentInfo{},
-		Templates: templates,
+		Templates: map[string][]string{},
 	}
 }
 
@@ -54,6 +50,10 @@ func (s *State) UpdateDocument(document, text string) {
 
 func (s *State) CloseDocument(document string) {
 	delete(s.Documents, document)
+}
+
+func (s *State) UpdateTemplates(templates map[string][]string) {
+	s.Templates = templates
 }
 
 func matchesTemplateLine(line string, template string) bool {

@@ -36,11 +36,11 @@ func main() {
 			return
 		}
 
-		handleMessage(logger, writer, state, method, content)
+		handleMessage(logger, writer, &state, method, content)
 	}
 }
 
-func handleMessage(logger *log.Logger, writer io.Writer, state state.State, method string, content []byte) {
+func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, method string, content []byte) {
 	logger.Printf("recived message with method '%s'\n", method)
 
 	switch method {
@@ -56,6 +56,8 @@ func handleMessage(logger *log.Logger, writer io.Writer, state state.State, meth
 		handleTextDocumentDidCloseMessage(logger, state, content)
 	case "textDocument/codeAction":
 		handleTextDocumentCodeActionMessage(logger, writer, state, content)
+	case "workspace/didChangeConfiguration":
+		handleWorkspaceDidChangeConfigurationMessage(logger, state, content)
 	}
 }
 
@@ -86,7 +88,7 @@ func handleShutdownMessage(logger *log.Logger, writer io.Writer, message []byte)
 	logger.Println("sent the 'shutdown' response")
 }
 
-func handleTextDocumentDidOpenMessage(logger *log.Logger, state state.State, message []byte) {
+func handleTextDocumentDidOpenMessage(logger *log.Logger, state *state.State, message []byte) {
 	var request lsp.DidOpenTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("recived invalid 'textDocument/didOpen' message: %s\n", err)
@@ -96,7 +98,7 @@ func handleTextDocumentDidOpenMessage(logger *log.Logger, state state.State, mes
 	logger.Printf("opend document %s [%s]\n", request.Params.TextDocument.URI, request.Params.TextDocument.LanguageID)
 }
 
-func handleTextDocumentDidChangeMessage(logger *log.Logger, state state.State, message []byte) {
+func handleTextDocumentDidChangeMessage(logger *log.Logger, state *state.State, message []byte) {
 	var request lsp.DidChangeTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("recived invalid 'textDocument/didChange' message: %s\n", err)
@@ -109,7 +111,7 @@ func handleTextDocumentDidChangeMessage(logger *log.Logger, state state.State, m
 	logger.Printf("changed document %s\n", request.Params.TextDocument.URI)
 }
 
-func handleTextDocumentDidCloseMessage(logger *log.Logger, state state.State, message []byte) {
+func handleTextDocumentDidCloseMessage(logger *log.Logger, state *state.State, message []byte) {
 	var request lsp.DidCloseTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("recived invalid 'textDocument/didClose' message: %s\n", err)
@@ -119,7 +121,7 @@ func handleTextDocumentDidCloseMessage(logger *log.Logger, state state.State, me
 	logger.Printf("closed document %s\n", request.Params.TextDocument.URI)
 }
 
-func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, state state.State, message []byte) {
+func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, state *state.State, message []byte) {
 	var request lsp.CodeActionRequest
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("recived invalid 'textDocument/codeAction' message: %s\n", err)
@@ -128,6 +130,16 @@ func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, s
 	actions := state.CalculateCodeActions(request.Params.TextDocument.URI, request.Params.Range.Start, request.Params.Range.End)
 	logger.Printf("calculated %d code actions for %s\n", len(actions), request.Params.TextDocument.URI)
 	replyMessage(logger, writer, lsp.NewCodeActionResponse(request.ID, actions))
+}
+
+func handleWorkspaceDidChangeConfigurationMessage(logger *log.Logger, state *state.State, message []byte) {
+	var request lsp.DidChangeConfigurationNotification
+	if err := json.Unmarshal(message, &request); err != nil {
+		logger.Printf("recived invalid 'workspace/didChangeConfiguration' message: %s\n", err)
+	}
+
+	state.UpdateTemplates(request.Params.Settings.Templates)
+	logger.Println("updated settings")
 }
 
 func replyMessage(logger *log.Logger, writer io.Writer, message any) {
