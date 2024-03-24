@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/chefe/copyrightlsp/codeactions"
 	"github.com/chefe/copyrightlsp/lsp"
 	"github.com/chefe/copyrightlsp/rpc"
 	"github.com/chefe/copyrightlsp/state"
@@ -127,7 +128,7 @@ func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, s
 		logger.Printf("recived invalid 'textDocument/codeAction' message: %s\n", err)
 	}
 
-	actions := state.CalculateCodeActions(request.Params.TextDocument.URI, request.Params.Range.Start, request.Params.Range.End)
+	actions := codeactions.CalculateCodeActions(state, request.Params.TextDocument.URI, request.Params.Range.Start, request.Params.Range.End)
 	logger.Printf("calculated %d code actions for %s\n", len(actions), request.Params.TextDocument.URI)
 	replyMessage(logger, writer, lsp.NewCodeActionResponse(request.ID, actions))
 }
