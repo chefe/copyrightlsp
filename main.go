@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/chefe/copyrightlsp/codeactions"
+	"github.com/chefe/copyrightlsp/diagnostics"
 	"github.com/chefe/copyrightlsp/lsp"
 	"github.com/chefe/copyrightlsp/rpc"
 	"github.com/chefe/copyrightlsp/state"
@@ -59,9 +60,9 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 	case "shutdown":
 		handleShutdownMessage(logger, writer, content)
 	case "textDocument/didOpen":
-		handleTextDocumentDidOpenMessage(logger, state, content)
+		handleTextDocumentDidOpenMessage(logger, state, writer, content)
 	case "textDocument/didChange":
-		handleTextDocumentDidChangeMessage(logger, state, content)
+		handleTextDocumentDidChangeMessage(logger, state, writer, content)
 	case "textDocument/didClose":
 		handleTextDocumentDidCloseMessage(logger, state, content)
 	case "textDocument/codeAction":
@@ -98,7 +99,7 @@ func handleShutdownMessage(logger *log.Logger, writer io.Writer, message []byte)
 	logger.Println("sent the 'shutdown' response")
 }
 
-func handleTextDocumentDidOpenMessage(logger *log.Logger, state *state.State, message []byte) {
+func handleTextDocumentDidOpenMessage(logger *log.Logger, state *state.State, writer io.Writer, message []byte) {
 	var request lsp.DidOpenTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("recived invalid 'textDocument/didOpen' message: %s\n", err)
@@ -106,9 +107,13 @@ func handleTextDocumentDidOpenMessage(logger *log.Logger, state *state.State, me
 
 	state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text, request.Params.TextDocument.LanguageID)
 	logger.Printf("opend document %s [%s]\n", request.Params.TextDocument.URI, request.Params.TextDocument.LanguageID)
+
+	diag := diagnostics.CalculateDiagnostics(state, request.Params.TextDocument.URI)
+	replyMessage(logger, writer, lsp.NewPublishDiagnosticsNotification(request.Params.TextDocument.URI, diag))
+	logger.Printf("calculated document diagnostics %s [%d]\n", request.Params.TextDocument.URI, len(diag))
 }
 
-func handleTextDocumentDidChangeMessage(logger *log.Logger, state *state.State, message []byte) {
+func handleTextDocumentDidChangeMessage(logger *log.Logger, state *state.State, writer io.Writer, message []byte) {
 	var request lsp.DidChangeTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("recived invalid 'textDocument/didChange' message: %s\n", err)
@@ -119,6 +124,10 @@ func handleTextDocumentDidChangeMessage(logger *log.Logger, state *state.State, 
 	}
 
 	logger.Printf("changed document %s\n", request.Params.TextDocument.URI)
+
+	diag := diagnostics.CalculateDiagnostics(state, request.Params.TextDocument.URI)
+	replyMessage(logger, writer, lsp.NewPublishDiagnosticsNotification(request.Params.TextDocument.URI, diag))
+	logger.Printf("calculated document diagnostics %s [%d]\n", request.Params.TextDocument.URI, len(diag))
 }
 
 func handleTextDocumentDidCloseMessage(logger *log.Logger, state *state.State, message []byte) {
