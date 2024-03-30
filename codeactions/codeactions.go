@@ -18,6 +18,11 @@ func buildCopyrightString(template []string) string {
 }
 
 func CalculateCodeActions(state *state.State, document string, start lsp.Position, end lsp.Position) []lsp.CodeAction {
+	// show code action only on first line of a document
+	if start.Line > 0 || end.Line > 0 {
+		return []lsp.CodeAction{}
+	}
+
 	doc, ok := state.Documents[document]
 	if !ok {
 		return []lsp.CodeAction{}
