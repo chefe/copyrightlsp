@@ -1,4 +1,4 @@
-package codeactions
+package analysis
 
 import "testing"
 
@@ -69,7 +69,7 @@ func TestMatchesTemplateLine(t *testing.T) {
 	}
 }
 
-func TestContainsCopyrightString(t *testing.T) {
+func TestContainsTemplateLines(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -140,7 +140,7 @@ func TestContainsCopyrightString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := containsCopyrightString(tt.lines, tt.template)
+			got := containsTemplateLines(tt.lines, tt.template)
 			if got != tt.want {
 				t.Fatalf("expected: %t, got: %t", tt.want, got)
 			}
