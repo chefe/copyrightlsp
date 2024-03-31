@@ -109,7 +109,6 @@ linters:
     - stylecheck
     - wrapcheck
     - varnamelen
-    - perfsprint
     - paralleltest
     - nonamedreturns
     - nlreturn

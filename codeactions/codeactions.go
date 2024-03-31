@@ -1,7 +1,6 @@
 package codeactions
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -41,7 +40,7 @@ func CalculateCodeActions(state *state.State, document string, start lsp.Positio
 	changes := map[string][]lsp.TextEdit{}
 	changes[document] = []lsp.TextEdit{
 		{
-			NewText: fmt.Sprintf("%s\n", buildCopyrightString(templateLines)),
+			NewText: buildCopyrightString(templateLines) + "\n",
 			Range:   lsp.NewRange(0, 0, 0, 0),
 		},
 	}
