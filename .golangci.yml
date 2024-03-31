@@ -114,7 +114,6 @@ linters:
     - gomnd
     - goerr113
     - lll
-    - unconvert
     - gosec
 
 issues:

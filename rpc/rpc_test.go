@@ -149,7 +149,7 @@ func TestDecodeMessageWithError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			method, content, err := rpc.DecodeMessage([]byte(tt.message))
+			method, content, err := rpc.DecodeMessage(tt.message)
 			if err == nil {
 				t.Fatal("expected error but got none")
 			}
