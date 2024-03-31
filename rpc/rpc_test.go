@@ -116,7 +116,7 @@ func TestDecodeMessageWithError(t *testing.T) {
 			message: []byte{},
 		},
 		{
-			name:    "no seperator",
+			name:    "no separator",
 			message: []byte("some\r\ndata"),
 		},
 		{

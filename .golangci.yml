@@ -115,7 +115,6 @@ linters:
     - nonamedreturns
     - nlreturn
     - gocritic
-    - misspell
     - gomnd
     - goerr113
     - lll
