@@ -36,6 +36,7 @@ func main() {
 
 	for scanner.Scan() {
 		msg := scanner.Bytes()
+
 		method, content, err := rpc.DecodeMessage(msg)
 		if err != nil {
 			logger.Printf("got an error: %s\n", err)

@@ -29,6 +29,7 @@ func parseContentLengthHeader(field []byte) (int, error) {
 	}
 
 	contentLengthBytes := field[len("Content-Length: "):]
+
 	contentLength, err := strconv.Atoi(string(contentLengthBytes))
 	if err != nil {
 		return 0, fmt.Errorf("faild to parse content length header: %w", err)

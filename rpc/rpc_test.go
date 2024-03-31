@@ -14,6 +14,7 @@ type EncodingExample struct {
 func TestEncodeMessage(t *testing.T) {
 	expected := "Content-Length: 16\r\n\r\n{\"testing\":true}"
 	got := rpc.EncodeMessage(EncodingExample{Testing: true})
+
 	if expected != got {
 		t.Fatalf("expected: %s, actual: %s", expected, got)
 	}
@@ -79,6 +80,7 @@ func TestDecodeMessage(t *testing.T) {
 			t.Parallel()
 
 			message := []byte(strings.Join(tt.lines, "\r\n"))
+
 			method, content, err := rpc.DecodeMessage(message)
 			if err != nil {
 				t.Fatalf("expected no error but got one: %s", err)
