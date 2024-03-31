@@ -33,7 +33,8 @@ func CalculateCodeActions(state *state.State, document string, start lsp.Positio
 		return []lsp.CodeAction{}
 	}
 
-	if analysis.ContainsCopyrightString(doc.Content, templateLines) {
+	searchRange := state.GetSearchRange(doc.Language)
+	if analysis.ContainsCopyrightString(doc.Content, templateLines, searchRange) {
 		return []lsp.CodeAction{}
 	}
 

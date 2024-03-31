@@ -17,7 +17,8 @@ func CalculateDiagnostics(state *state.State, document string) []lsp.Diagnostic 
 		return []lsp.Diagnostic{}
 	}
 
-	if analysis.ContainsCopyrightString(doc.Content, templateLines) {
+	searchRange := state.GetSearchRange(doc.Language)
+	if analysis.ContainsCopyrightString(doc.Content, templateLines, searchRange) {
 		return []lsp.Diagnostic{}
 	}
 

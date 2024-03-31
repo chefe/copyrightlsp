@@ -10,6 +10,8 @@ type State struct {
 	Documents map[string]documentInfo
 	// Map languages to template lines
 	Templates map[string][]string
+	// Map languages to search ranges
+	SearchRanges map[string]uint8
 }
 
 func NewState() State {
@@ -44,4 +46,17 @@ func (s *State) CloseDocument(document string) {
 
 func (s *State) UpdateTemplates(templates map[string][]string) {
 	s.Templates = templates
+}
+
+func (s *State) UpdateSearchRanges(searchRanges map[string]uint8) {
+	s.SearchRanges = searchRanges
+}
+
+func (s *State) GetSearchRange(language string) uint8 {
+	searchRange, ok := s.SearchRanges[language]
+	if !ok {
+		return 0
+	}
+
+	return searchRange
 }

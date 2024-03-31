@@ -152,46 +152,53 @@ func TestContainsCopyrightString(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name     string
-		content  string
-		template []string
-		want     bool
+		name        string
+		content     string
+		template    []string
+		searchRange uint8
+		want        bool
 	}{
 		{
-			name:     "empty string and nil template",
-			content:  "",
-			template: nil,
-			want:     false,
+			name:        "empty string and nil template",
+			content:     "",
+			template:    nil,
+			searchRange: 0,
+			want:        false,
 		},
 		{
-			name:     "empty string and empty template",
-			content:  "",
-			template: []string{},
-			want:     false,
+			name:        "empty string and empty template",
+			content:     "",
+			template:    []string{},
+			searchRange: 0,
+			want:        false,
 		},
 		{
-			name:     "match on first line",
-			content:  "# Copyright (C) 2024 AUTHOR",
-			template: []string{"# Copyright (C) {year} AUTHOR"},
-			want:     true,
+			name:        "match on first line",
+			content:     "# Copyright (C) 2024 AUTHOR",
+			template:    []string{"# Copyright (C) {year} AUTHOR"},
+			searchRange: 0,
+			want:        true,
 		},
 		{
-			name:     "match on second line",
-			content:  "#!/bin/sh\n# Copyright (C) 2024 AUTHOR",
-			template: []string{"# Copyright (C) {year} AUTHOR"},
-			want:     true,
+			name:        "match on second line",
+			content:     "#!/bin/sh\n# Copyright (C) 2024 AUTHOR",
+			template:    []string{"# Copyright (C) {year} AUTHOR"},
+			searchRange: 1,
+			want:        true,
 		},
 		{
-			name:     "multiline match starting on last line of search range",
-			content:  "\n\n\n\n\n\n\n\n\n\n/*\n * Copyright (C) 2024 AUTHOR\n */",
-			template: []string{"/*", " * Copyright (C) {year} AUTHOR", " */"},
-			want:     true,
+			name:        "multiline match starting on last line of search range",
+			content:     "\n\n/*\n * Copyright (C) 2024 AUTHOR\n */",
+			template:    []string{"/*", " * Copyright (C) {year} AUTHOR", " */"},
+			searchRange: 2,
+			want:        true,
 		},
 		{
-			name:     "match starting outside of search range",
-			content:  "\n\n\n\n\n\n\n\n\n\n\n# Copyright (C) 2024 AUTHOR",
-			template: []string{"# Copyright (C) {year} AUTHOR"},
-			want:     false,
+			name:        "match starting outside of search range",
+			content:     "\n\n\n# Copyright (C) 2024 AUTHOR",
+			template:    []string{"# Copyright (C) {year} AUTHOR"},
+			searchRange: 2,
+			want:        false,
 		},
 	}
 
@@ -201,7 +208,7 @@ func TestContainsCopyrightString(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := ContainsCopyrightString(tt.content, tt.template)
+			got := ContainsCopyrightString(tt.content, tt.template, tt.searchRange)
 			if got != tt.want {
 				t.Fatalf("expected: %t, got: %t", tt.want, got)
 			}

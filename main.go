@@ -158,6 +158,7 @@ func handleWorkspaceDidChangeConfigurationMessage(logger *log.Logger, state *sta
 	}
 
 	state.UpdateTemplates(request.Params.Settings.Templates)
+	state.UpdateSearchRanges(request.Params.Settings.SearchRanges)
 	logger.Println("updated settings")
 }
 

@@ -39,8 +39,8 @@ func containsTemplateLines(lines []string, template []string) bool {
 	return false
 }
 
-func ContainsCopyrightString(content string, templateLines []string) bool {
-	limit := 10 + len(templateLines)
+func ContainsCopyrightString(content string, templateLines []string, searchRange uint8) bool {
+	limit := int(searchRange) + len(templateLines)
 
 	// split content into n+1 lines, because the last item contains the
 	// remaining part of the string, which should be ignored
