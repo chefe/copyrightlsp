@@ -107,5 +107,6 @@ func Split(data []byte, _ bool) (advance int, message []byte, err error) {
 	}
 
 	totalLength := len(header) + 4 + contentLength
+
 	return totalLength, data[:totalLength], nil
 }

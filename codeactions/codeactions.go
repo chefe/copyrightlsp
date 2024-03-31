@@ -13,6 +13,7 @@ import (
 func buildCopyrightString(template []string) string {
 	year := strconv.Itoa(time.Now().Year())
 	content := strings.Join(template, "\n")
+
 	return strings.ReplaceAll(content, "{year}", year)
 }
 

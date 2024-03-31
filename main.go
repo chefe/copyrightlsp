@@ -39,11 +39,13 @@ func main() {
 		method, content, err := rpc.DecodeMessage(msg)
 		if err != nil {
 			logger.Printf("got an error: %s\n", err)
+
 			continue
 		}
 
 		if method == "exit" {
 			logger.Println("received the 'exit' request")
+
 			return
 		}
 
