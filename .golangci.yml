@@ -113,7 +113,6 @@ linters:
     - gomnd
     - goerr113
     - lll
-    - gosec
 
 issues:
   exclude-use-default: false

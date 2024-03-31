@@ -174,7 +174,8 @@ func replyMessage(logger *log.Logger, writer io.Writer, message any) {
 }
 
 func createLogFileWriter(filename string) io.Writer {
-	logFile, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o666)
+	//#nosec G304 // Filename of log file can be specified via cli argument
+	logFile, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o600)
 	if err != nil {
 		panic("failed to open or create the log file")
 	}
