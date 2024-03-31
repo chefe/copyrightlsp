@@ -16,8 +16,9 @@ type State struct {
 
 func NewState() State {
 	return State{
-		Documents: map[string]documentInfo{},
-		Templates: map[string][]string{},
+		Documents:    map[string]documentInfo{},
+		Templates:    map[string][]string{},
+		SearchRanges: map[string]uint8{},
 	}
 }
 

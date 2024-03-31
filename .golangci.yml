@@ -107,7 +107,6 @@ linters:
     - revive
     - wsl
     - stylecheck
-    - exhaustruct
     - wrapcheck
     - varnamelen
     - perfsprint
