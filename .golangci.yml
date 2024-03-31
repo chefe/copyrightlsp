@@ -108,7 +108,6 @@ linters:
     - stylecheck
     - wrapcheck
     - varnamelen
-    - paralleltest
     - gocritic
     - gomnd
     - goerr113

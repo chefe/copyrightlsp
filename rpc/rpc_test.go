@@ -12,6 +12,8 @@ type EncodingExample struct {
 }
 
 func TestEncodeMessage(t *testing.T) {
+	t.Parallel()
+
 	expected := "Content-Length: 16\r\n\r\n{\"testing\":true}"
 	got := rpc.EncodeMessage(EncodingExample{Testing: true})
 
