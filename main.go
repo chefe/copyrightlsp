@@ -108,7 +108,12 @@ func handleTextDocumentDidOpenMessage(logger *log.Logger, state *state.State, wr
 		logger.Printf("received invalid 'textDocument/didOpen' message: %s\n", err)
 	}
 
-	state.OpenDocument(request.Params.TextDocument.URI, request.Params.TextDocument.Text, request.Params.TextDocument.LanguageID)
+	state.OpenDocument(
+		request.Params.TextDocument.URI,
+		request.Params.TextDocument.Text,
+		request.Params.TextDocument.LanguageID,
+	)
+
 	logger.Printf("opend document %s [%s]\n", request.Params.TextDocument.URI, request.Params.TextDocument.LanguageID)
 
 	diag := diagnostics.CalculateDiagnostics(state, request.Params.TextDocument.URI)
@@ -149,7 +154,13 @@ func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, s
 		logger.Printf("received invalid 'textDocument/codeAction' message: %s\n", err)
 	}
 
-	actions := codeactions.CalculateCodeActions(state, request.Params.TextDocument.URI, request.Params.Range.Start, request.Params.Range.End)
+	actions := codeactions.CalculateCodeActions(
+		state,
+		request.Params.TextDocument.URI,
+		request.Params.Range.Start,
+		request.Params.Range.End,
+	)
+
 	logger.Printf("calculated %d code actions for %s\n", len(actions), request.Params.TextDocument.URI)
 	replyMessage(logger, writer, lsp.NewCodeActionResponse(request.ID, actions))
 }

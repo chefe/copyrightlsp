@@ -111,7 +111,6 @@ linters:
     - gocritic
     - gomnd
     - goerr113
-    - lll
 
 issues:
   exclude-use-default: false
@@ -122,6 +121,12 @@ issues:
       path: _test\.go
       linters:
         - funlen
+
+    # disable lll linter for long strings in test funcs
+    - source: ^.*\ \[\]byte\(".*"\),$
+      path: _test\.go
+      linters:
+        - lll
 
     # disable varnamelen linter for tt variable in test funcs
     - source: ^\s*tt := tt$
