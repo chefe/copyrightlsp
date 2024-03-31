@@ -1,6 +1,6 @@
 package lsp
 
-// The language server protocol always uses "2.0" as the jsonrpc version
+// The language server protocol always uses "2.0" as the jsonrpc version.
 const jsonRpcVersion = "2.0"
 
 type Request struct {

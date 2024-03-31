@@ -116,7 +116,6 @@ linters:
     - gomnd
     - goerr113
     - lll
-    - godot
     - unconvert
     - gofumpt
     - gosec
