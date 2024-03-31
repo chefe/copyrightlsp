@@ -92,7 +92,7 @@ func DecodeMessage(msg []byte) (string, []byte, error) {
 	return baseMessage.Method, contentBytes, nil
 }
 
-func Split(data []byte, _ bool) (advance int, message []byte, err error) {
+func Split(data []byte, _ bool) (int, []byte, error) {
 	header, content, found := bytes.Cut(data, []byte{'\r', '\n', '\r', '\n'})
 	if !found {
 		return 0, nil, nil
