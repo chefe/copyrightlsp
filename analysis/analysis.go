@@ -40,9 +40,13 @@ func containsTemplateLines(lines []string, template []string) bool {
 }
 
 func ContainsCopyrightString(content string, templateLines []string) bool {
-	lines := strings.Split(content, "\n")
-
 	limit := 10 + len(templateLines)
+
+	// split content into n+1 lines, because the last item contains the
+	// remaining part of the string, which should be ignored
+	lines := strings.SplitN(content, "\n", limit+1)
+
+	// handle case if the number of lines is smaller then the limit
 	if len(lines) < limit {
 		limit = len(lines)
 	}
