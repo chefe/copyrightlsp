@@ -39,7 +39,7 @@ func parseContentLengthHeader(field []byte) (int, error) {
 
 	contentLength, err := strconv.Atoi(string(contentLengthBytes))
 	if err != nil {
-		return 0, fmt.Errorf("faild to parse content length header: %w", err)
+		return 0, fmt.Errorf("failed to parse content length header: %w", err)
 	}
 
 	return contentLength, nil
@@ -82,7 +82,7 @@ func DecodeMessage(msg []byte) (string, []byte, error) {
 
 	contentLength, err := parseMessageHeader(header)
 	if err != nil {
-		return "", nil, fmt.Errorf("faild to parse header: %w", err)
+		return "", nil, fmt.Errorf("failed to parse header: %w", err)
 	}
 
 	contentBytes := content[:contentLength]
@@ -93,7 +93,7 @@ func DecodeMessage(msg []byte) (string, []byte, error) {
 
 	var baseMessage BaseMessage
 	if err := json.Unmarshal(contentBytes, &baseMessage); err != nil {
-		return "", nil, fmt.Errorf("faild to unmarshal message: %w", err)
+		return "", nil, fmt.Errorf("failed to unmarshal message: %w", err)
 	}
 
 	return baseMessage.Method, contentBytes, nil
