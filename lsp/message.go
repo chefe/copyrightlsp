@@ -1,7 +1,7 @@
 package lsp
 
 // The language server protocol always uses "2.0" as the jsonrpc version.
-const jsonRpcVersion = "2.0"
+const jsonRPCVersion = "2.0"
 
 type Request struct {
 	// The version of "jsonrpc" to use.
@@ -27,9 +27,9 @@ type Notification struct {
 }
 
 func NewResponse(id int) Response {
-	return Response{ID: &id, RPC: jsonRpcVersion}
+	return Response{ID: &id, RPC: jsonRPCVersion}
 }
 
 func NewNotification(method string) Notification {
-	return Notification{RPC: jsonRpcVersion, Method: method}
+	return Notification{RPC: jsonRPCVersion, Method: method}
 }

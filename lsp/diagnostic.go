@@ -1,6 +1,6 @@
 package lsp
 
-// Defines if the dianostic is an error, warning, information or a hint.
+// DiagnosticSeverity defines if the dianostic is an error, warning, information or a hint.
 type DiagnosticSeverity int
 
 const (

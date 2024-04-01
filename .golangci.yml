@@ -105,7 +105,6 @@ linters:
 
     # temporary disabled until they can be fixed
     - revive
-    - stylecheck
     - gocritic
 
 issues:

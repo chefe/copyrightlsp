@@ -43,8 +43,8 @@ type ServerInfo struct {
 	Version string `json:"version"`
 }
 
-// Defines how the host (editor) should sync document changes to the language
-// server.
+// TextDocumentSyncKind defines how the host (editor) should sync document
+// changes to the language server.
 type TextDocumentSyncKind int
 
 const (
