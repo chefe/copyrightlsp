@@ -106,7 +106,6 @@ linters:
     # temporary disabled until they can be fixed
     - revive
     - stylecheck
-    - wrapcheck
     - gocritic
     - gomnd
     - goerr113
