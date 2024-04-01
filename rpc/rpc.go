@@ -14,6 +14,13 @@ import (
 	"strings"
 )
 
+var (
+	errInvalidContentLengthHeader = errors.New("header did not start with content length")
+	errUnsupportedContentType     = errors.New("unsupported content type provided")
+	errInvalidHeaderFields        = errors.New("invalid header fields provided")
+	errMissingSeparator           = errors.New("did not find separator between header and content")
+)
+
 func EncodeMessage(msg any) string {
 	content, err := json.Marshal(msg)
 	if err != nil {
@@ -25,7 +32,7 @@ func EncodeMessage(msg any) string {
 
 func parseContentLengthHeader(field []byte) (int, error) {
 	if !strings.HasPrefix(string(field), "Content-Length: ") {
-		return 0, errors.New("header did not start with content length")
+		return 0, errInvalidContentLengthHeader
 	}
 
 	contentLengthBytes := field[len("Content-Length: "):]
@@ -50,7 +57,7 @@ func parseMessageHeader(header []byte) (int, error) {
 
 	if strings.HasPrefix(string(fieldOne), "Content-Type: ") {
 		if !isValidContentTypeHeader(fieldOne) {
-			return 0, errors.New("unsupported content type provided")
+			return 0, errUnsupportedContentType
 		}
 
 		return parseContentLengthHeader(fieldTwo)
@@ -58,19 +65,19 @@ func parseMessageHeader(header []byte) (int, error) {
 
 	if strings.HasPrefix(string(fieldTwo), "Content-Type: ") {
 		if !isValidContentTypeHeader(fieldTwo) {
-			return 0, errors.New("unsupported content type provided")
+			return 0, errUnsupportedContentType
 		}
 
 		return parseContentLengthHeader(fieldOne)
 	}
 
-	return 0, errors.New("invalid header fields provided")
+	return 0, errInvalidHeaderFields
 }
 
 func DecodeMessage(msg []byte) (string, []byte, error) {
 	header, content, found := bytes.Cut(msg, []byte{'\r', '\n', '\r', '\n'})
 	if !found {
-		return "", nil, errors.New("did not find separator between header and content")
+		return "", nil, errMissingSeparator
 	}
 
 	contentLength, err := parseMessageHeader(header)

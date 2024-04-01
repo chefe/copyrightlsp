@@ -107,7 +107,6 @@ linters:
     - revive
     - stylecheck
     - gocritic
-    - goerr113
 
 issues:
   exclude-use-default: false
