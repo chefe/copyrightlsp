@@ -107,7 +107,6 @@ linters:
     - revive
     - stylecheck
     - gocritic
-    - gomnd
     - goerr113
 
 issues:
