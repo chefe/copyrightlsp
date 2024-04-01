@@ -23,13 +23,13 @@ func CalculateCodeActions(state *state.State, document string, start lsp.Positio
 		return []lsp.CodeAction{}
 	}
 
-	doc, ok := state.Documents[document]
-	if !ok {
+	doc, found := state.Documents[document]
+	if !found {
 		return []lsp.CodeAction{}
 	}
 
-	templateLines, ok := state.Templates[doc.Language]
-	if !ok {
+	templateLines, found := state.Templates[doc.Language]
+	if !found {
 		return []lsp.CodeAction{}
 	}
 

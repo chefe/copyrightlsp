@@ -7,13 +7,13 @@ import (
 )
 
 func CalculateDiagnostics(state *state.State, document string) []lsp.Diagnostic {
-	doc, ok := state.Documents[document]
-	if !ok {
+	doc, found := state.Documents[document]
+	if !found {
 		return []lsp.Diagnostic{}
 	}
 
-	templateLines, ok := state.Templates[doc.Language]
-	if !ok {
+	templateLines, found := state.Templates[doc.Language]
+	if !found {
 		return []lsp.Diagnostic{}
 	}
 

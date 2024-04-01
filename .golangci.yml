@@ -107,7 +107,6 @@ linters:
     - revive
     - stylecheck
     - wrapcheck
-    - varnamelen
     - gocritic
     - gomnd
     - goerr113
