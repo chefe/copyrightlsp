@@ -99,6 +99,8 @@ linters:
     - structcheck
     - varcheck
     - maligned
+    - gomnd
+    - execinquery
 
     # disable `testpackage` linter because white-box tests are used
     - testpackage
