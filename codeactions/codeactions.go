@@ -17,23 +17,23 @@ func buildCopyrightString(template []string) string {
 	return strings.ReplaceAll(content, "{year}", year)
 }
 
-func CalculateCodeActions(state *state.State, document string, start lsp.Position, end lsp.Position) []lsp.CodeAction {
+func CalculateCodeActions(lspState *state.State, document string, start lsp.Position, end lsp.Position) []lsp.CodeAction {
 	// show code action only on first line of a document
 	if start.Line > 0 || end.Line > 0 {
 		return []lsp.CodeAction{}
 	}
 
-	doc, found := state.Documents[document]
+	doc, found := lspState.Documents[document]
 	if !found {
 		return []lsp.CodeAction{}
 	}
 
-	templateLines, found := state.Templates[doc.Language]
+	templateLines, found := lspState.Templates[doc.Language]
 	if !found {
 		return []lsp.CodeAction{}
 	}
 
-	searchRange := state.GetSearchRange(doc.Language)
+	searchRange := lspState.GetSearchRange(doc.Language)
 	if analysis.ContainsCopyrightString(doc.Content, templateLines, searchRange) {
 		return []lsp.CodeAction{}
 	}

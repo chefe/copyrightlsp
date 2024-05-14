@@ -32,7 +32,7 @@ func main() {
 
 	writer := os.Stdout
 
-	state := state.NewState()
+	lspState := state.NewState()
 
 	for scanner.Scan() {
 		msg := scanner.Bytes()
@@ -50,11 +50,11 @@ func main() {
 			return
 		}
 
-		handleMessage(logger, writer, &state, method, content)
+		handleMessage(logger, writer, &lspState, method, content)
 	}
 }
 
-func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, method string, content []byte) {
+func handleMessage(logger *log.Logger, writer io.Writer, lspState *state.State, method string, content []byte) {
 	logger.Printf("received message with method '%s'\n", method)
 
 	switch method {
@@ -63,15 +63,15 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 	case "shutdown":
 		handleShutdownMessage(logger, writer, content)
 	case "textDocument/didOpen":
-		handleTextDocumentDidOpenMessage(logger, state, writer, content)
+		handleTextDocumentDidOpenMessage(logger, lspState, writer, content)
 	case "textDocument/didChange":
-		handleTextDocumentDidChangeMessage(logger, state, writer, content)
+		handleTextDocumentDidChangeMessage(logger, lspState, writer, content)
 	case "textDocument/didClose":
-		handleTextDocumentDidCloseMessage(logger, state, content)
+		handleTextDocumentDidCloseMessage(logger, lspState, content)
 	case "textDocument/codeAction":
-		handleTextDocumentCodeActionMessage(logger, writer, state, content)
+		handleTextDocumentCodeActionMessage(logger, writer, lspState, content)
 	case "workspace/didChangeConfiguration":
-		handleWorkspaceDidChangeConfigurationMessage(logger, state, content)
+		handleWorkspaceDidChangeConfigurationMessage(logger, lspState, content)
 	}
 }
 
@@ -102,13 +102,13 @@ func handleShutdownMessage(logger *log.Logger, writer io.Writer, message []byte)
 	logger.Println("sent the 'shutdown' response")
 }
 
-func handleTextDocumentDidOpenMessage(logger *log.Logger, state *state.State, writer io.Writer, message []byte) {
+func handleTextDocumentDidOpenMessage(logger *log.Logger, lspState *state.State, writer io.Writer, message []byte) {
 	var request lsp.DidOpenTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("received invalid 'textDocument/didOpen' message: %s\n", err)
 	}
 
-	state.OpenDocument(
+	lspState.OpenDocument(
 		request.Params.TextDocument.URI,
 		request.Params.TextDocument.Text,
 		request.Params.TextDocument.LanguageID,
@@ -116,46 +116,46 @@ func handleTextDocumentDidOpenMessage(logger *log.Logger, state *state.State, wr
 
 	logger.Printf("opend document %s [%s]\n", request.Params.TextDocument.URI, request.Params.TextDocument.LanguageID)
 
-	diag := diagnostics.CalculateDiagnostics(state, request.Params.TextDocument.URI)
+	diag := diagnostics.CalculateDiagnostics(lspState, request.Params.TextDocument.URI)
 	replyMessage(logger, writer, lsp.NewPublishDiagnosticsNotification(request.Params.TextDocument.URI, diag))
 	logger.Printf("calculated document diagnostics %s [%d]\n", request.Params.TextDocument.URI, len(diag))
 }
 
-func handleTextDocumentDidChangeMessage(logger *log.Logger, state *state.State, writer io.Writer, message []byte) {
+func handleTextDocumentDidChangeMessage(logger *log.Logger, lspState *state.State, writer io.Writer, message []byte) {
 	var request lsp.DidChangeTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("received invalid 'textDocument/didChange' message: %s\n", err)
 	}
 
 	for _, change := range request.Params.ContentChanges {
-		state.UpdateDocument(request.Params.TextDocument.URI, change.Text)
+		lspState.UpdateDocument(request.Params.TextDocument.URI, change.Text)
 	}
 
 	logger.Printf("changed document %s\n", request.Params.TextDocument.URI)
 
-	diag := diagnostics.CalculateDiagnostics(state, request.Params.TextDocument.URI)
+	diag := diagnostics.CalculateDiagnostics(lspState, request.Params.TextDocument.URI)
 	replyMessage(logger, writer, lsp.NewPublishDiagnosticsNotification(request.Params.TextDocument.URI, diag))
 	logger.Printf("calculated document diagnostics %s [%d]\n", request.Params.TextDocument.URI, len(diag))
 }
 
-func handleTextDocumentDidCloseMessage(logger *log.Logger, state *state.State, message []byte) {
+func handleTextDocumentDidCloseMessage(logger *log.Logger, lspState *state.State, message []byte) {
 	var request lsp.DidCloseTextDocumentNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("received invalid 'textDocument/didClose' message: %s\n", err)
 	}
 
-	state.CloseDocument(request.Params.TextDocument.URI)
+	lspState.CloseDocument(request.Params.TextDocument.URI)
 	logger.Printf("closed document %s\n", request.Params.TextDocument.URI)
 }
 
-func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, state *state.State, message []byte) {
+func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, lspState *state.State, message []byte) {
 	var request lsp.CodeActionRequest
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("received invalid 'textDocument/codeAction' message: %s\n", err)
 	}
 
 	actions := codeactions.CalculateCodeActions(
-		state,
+		lspState,
 		request.Params.TextDocument.URI,
 		request.Params.Range.Start,
 		request.Params.Range.End,
@@ -165,14 +165,14 @@ func handleTextDocumentCodeActionMessage(logger *log.Logger, writer io.Writer, s
 	replyMessage(logger, writer, lsp.NewCodeActionResponse(request.ID, actions))
 }
 
-func handleWorkspaceDidChangeConfigurationMessage(logger *log.Logger, state *state.State, message []byte) {
+func handleWorkspaceDidChangeConfigurationMessage(logger *log.Logger, lspState *state.State, message []byte) {
 	var request lsp.DidChangeConfigurationNotification
 	if err := json.Unmarshal(message, &request); err != nil {
 		logger.Printf("received invalid 'workspace/didChangeConfiguration' message: %s\n", err)
 	}
 
-	state.UpdateTemplates(request.Params.Settings.Templates)
-	state.UpdateSearchRanges(request.Params.Settings.SearchRanges)
+	lspState.UpdateTemplates(request.Params.Settings.Templates)
+	lspState.UpdateSearchRanges(request.Params.Settings.SearchRanges)
 	logger.Println("updated settings")
 }
 
