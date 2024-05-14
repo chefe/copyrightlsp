@@ -16,6 +16,7 @@ var (
 	errMissingSeparator           = errors.New("did not find separator between header and content")
 )
 
+// EncodeMessage encodes the given message as a jsonrpc string.
 func EncodeMessage(msg any) string {
 	content, err := json.Marshal(msg)
 	if err != nil {
@@ -69,6 +70,7 @@ func parseMessageHeader(header []byte) (int, error) {
 	return 0, errInvalidHeaderFields
 }
 
+// DecodeMessage tries to decode the given string as a jsonrpc message.
 func DecodeMessage(msg []byte) (string, []byte, error) {
 	header, content, found := bytes.Cut(msg, []byte{'\r', '\n', '\r', '\n'})
 	if !found {
@@ -94,6 +96,8 @@ func DecodeMessage(msg []byte) (string, []byte, error) {
 	return baseMessage.Method, contentBytes, nil
 }
 
+// Split implements the `bufio.Scanner.Split` interfaces and allows to split
+// off a complete jsonrpc message from a byte stream.
 func Split(data []byte, _ bool) (int, []byte, error) {
 	header, content, found := bytes.Cut(data, []byte{'\r', '\n', '\r', '\n'})
 	if !found {

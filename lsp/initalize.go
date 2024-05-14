@@ -1,5 +1,6 @@
 package lsp
 
+// IntitializeRequest represents the structure of an `initialize` lsp request.
 type IntitializeRequest struct {
 	Params IntitializeParams `json:"params"`
 	Request
@@ -57,6 +58,7 @@ const (
 	TextDocumentSyncKindIncremental TextDocumentSyncKind = 2
 )
 
+// NewInitializeResponse creates a response for an `initialize` request.
 func NewInitializeResponse(id int) IntitializeResponse {
 	return IntitializeResponse{
 		Response: NewResponse(id),

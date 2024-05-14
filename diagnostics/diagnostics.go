@@ -6,6 +6,7 @@ import (
 	"github.com/chefe/copyrightlsp/state"
 )
 
+// CalculateDiagnostics returns all the diagnostics for the given document.
 func CalculateDiagnostics(lspState *state.State, document string) []lsp.Diagnostic {
 	doc, found := lspState.Documents[document]
 	if !found {

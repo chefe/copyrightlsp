@@ -17,6 +17,7 @@ func buildCopyrightString(template []string) string {
 	return strings.ReplaceAll(content, "{year}", year)
 }
 
+// CalculateCodeActions returns all the code actions for the given document and position.
 func CalculateCodeActions(lspState *state.State, document string, start, end lsp.Position) []lsp.CodeAction {
 	// show code action only on first line of a document
 	if start.Line > 0 || end.Line > 0 {

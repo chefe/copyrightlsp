@@ -4,16 +4,17 @@ package lsp
 type DiagnosticSeverity int
 
 const (
-	// Reports an error.
+	// DiagnosticSeverityError represents an error diagnostic.
 	DiagnosticSeverityError DiagnosticSeverity = 1
-	// Reports a warning.
+	// DiagnosticSeverityWarning represents a warning diagnostic.
 	DiagnosticSeverityWarning DiagnosticSeverity = 2
-	// Reports an information.
+	// DiagnosticSeverityInformation represents an information diagnostic.
 	DiagnosticSeverityInformation DiagnosticSeverity = 3
-	// Reports a hint.
+	// DiagnosticSeverityHint represents a hint diagnostic.
 	DiagnosticSeverityHint DiagnosticSeverity = 4
 )
 
+// Diagnostic represents a diagnostic object of the lsp protocol.
 type Diagnostic struct {
 	// The diagnostic's message.
 	Message string `json:"message"`
@@ -27,6 +28,7 @@ type Diagnostic struct {
 	Severity DiagnosticSeverity `json:"severity"`
 }
 
+// NewErrorDiagnostic creates an new error diagnostic with the given message.
 func NewErrorDiagnostic(message string) Diagnostic {
 	return Diagnostic{
 		Message:  message,

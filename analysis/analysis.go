@@ -40,6 +40,8 @@ func containsTemplateLines(lines, template []string) bool {
 	return false
 }
 
+// ContainsCopyrightString checks if the given `content` contains the lines
+// from the template in the given search range.
 func ContainsCopyrightString(content string, templateLines []string, searchRange uint8) bool {
 	limit := int(searchRange) + len(templateLines)
 

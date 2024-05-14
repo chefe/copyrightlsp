@@ -97,9 +97,6 @@ linters:
     # disable `testpackage` linter because white-box tests are used
     - testpackage
 
-    # temporary disabled until they can be fixed
-    - revive
-
 issues:
   exclude-use-default: false
 
@@ -121,3 +118,9 @@ issues:
       path: _test\.go
       linters:
         - varnamelen
+
+    # disable revive linter for all lsp types
+    - source: ^.*$
+      path: lsp/*
+      linters:
+        - revive
