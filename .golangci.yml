@@ -91,16 +91,6 @@ linters:
   enable-all: true
   disable:
     # disable deprecated linters
-    - nosnakecase
-    - ifshort
-    - interfacer
-    - golint
-    - deadcode
-    - exhaustivestruct
-    - scopelint
-    - structcheck
-    - varcheck
-    - maligned
     - gomnd
     - execinquery
 
