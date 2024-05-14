@@ -1,6 +1,7 @@
 package rpc_test
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -245,7 +246,7 @@ func TestSplit(t *testing.T) {
 				t.Fatalf("advance expected: %d, got: '%d'", tt.want.advance, advance)
 			}
 
-			if string(message) != string(tt.want.message) {
+			if !bytes.Equal(message, tt.want.message) {
 				t.Fatalf("message expected: '%s', got: '%s'", tt.want.message, message)
 			}
 		})

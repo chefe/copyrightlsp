@@ -17,7 +17,7 @@ func buildCopyrightString(template []string) string {
 	return strings.ReplaceAll(content, "{year}", year)
 }
 
-func CalculateCodeActions(lspState *state.State, document string, start lsp.Position, end lsp.Position) []lsp.CodeAction {
+func CalculateCodeActions(lspState *state.State, document string, start, end lsp.Position) []lsp.CodeAction {
 	// show code action only on first line of a document
 	if start.Line > 0 || end.Line > 0 {
 		return []lsp.CodeAction{}

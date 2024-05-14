@@ -20,7 +20,7 @@ func main() {
 	flag.Parse()
 
 	logWriter := io.Discard
-	if len(*logFile) > 0 {
+	if *logFile != "" {
 		logWriter = createLogFileWriter(*logFile)
 	}
 

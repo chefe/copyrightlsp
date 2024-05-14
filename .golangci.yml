@@ -76,6 +76,8 @@ linters-settings:
       - performance
       - experimental
       - opinionated
+    disabled-checks:
+      - unnamedResult
 
   misspell:
     locale: US
@@ -107,7 +109,6 @@ linters:
 
     # temporary disabled until they can be fixed
     - revive
-    - gocritic
 
 issues:
   exclude-use-default: false

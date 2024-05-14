@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-func matchesTemplateLine(line string, template string) bool {
+func matchesTemplateLine(line, template string) bool {
 	pattern := fmt.Sprintf("^%s$", regexp.QuoteMeta(template))
 	pattern = strings.ReplaceAll(pattern, "\\{year\\}", "[0-9]{4}")
 
-	return regexp.MustCompile(pattern).Match([]byte(line))
+	return regexp.MustCompile(pattern).MatchString(line)
 }
 
-func containsTemplateLines(lines []string, template []string) bool {
+func containsTemplateLines(lines, template []string) bool {
 	if len(template) == 0 {
 		return false
 	}
