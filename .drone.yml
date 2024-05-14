@@ -1,0 +1,20 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: lint
+    image: golangci/golangci-lint:latest
+    commands:
+      - golangci-lint run ./...
+
+  - name: test
+    image: golang:latest
+    commands:
+      - go test ./...
+
+  - name: build
+    image: golang:latest
+    commands:
+      - go build -buildvcs=false
