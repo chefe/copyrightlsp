@@ -1,126 +1,120 @@
-linters-settings:
-  depguard:
-    rules:
-      main:
-        list-mode: strict
-        files:
-          - $all
-          - "!**/analysis/*.go"
-          - "!**/codeactions/*.go"
-          - "!**/diagnostics/*.go"
-          - "!**/lsp/*.go"
-          - "!**/rpc/*.go"
-          - "!**/state/*.go"
-        allow:
-          - $gostd
-          - github.com/chefe/copyrightlsp/analysis
-          - github.com/chefe/copyrightlsp/lsp
-          - github.com/chefe/copyrightlsp/state
-          - github.com/chefe/copyrightlsp/diagnostics
-          - github.com/chefe/copyrightlsp/codeactions
-          - github.com/chefe/copyrightlsp/rpc
-
-      analysis:
-        list-mode: strict
-        files:
-          - "**/analysis/*.go"
-        allow:
-          - $gostd
-
-      codeactions:
-        list-mode: strict
-        files:
-          - "**/codeactions/*.go"
-        allow:
-          - $gostd
-          - github.com/chefe/copyrightlsp/analysis
-          - github.com/chefe/copyrightlsp/lsp
-          - github.com/chefe/copyrightlsp/state
-
-      diagnostics:
-        list-mode: strict
-        files:
-          - "**/diagnostics/*.go"
-        allow:
-          - $gostd
-          - github.com/chefe/copyrightlsp/analysis
-          - github.com/chefe/copyrightlsp/lsp
-          - github.com/chefe/copyrightlsp/state
-
-      lsp:
-        list-mode: strict
-        files:
-          - "**/lsp/*.go"
-        allow:
-          - $gostd
-
-      rpc:
-        list-mode: strict
-        files:
-          - "**/rpc/*.go"
-        allow:
-          - $gostd
-          - github.com/chefe/copyrightlsp/rpc
-
-      state:
-        list-mode: strict
-        files:
-          - "**/state/*.go"
-        allow:
-          - $gostd
-
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - style
-      - performance
-      - experimental
-      - opinionated
-    disabled-checks:
-      - unnamedResult
-
-  misspell:
-    locale: US
-
-  nolintlint:
-    allow-unused: false
-    require-explanation: true
-    require-specific: true
-
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    # disable deprecated linters
-    - gomnd
-    - execinquery
-
-    # disable `testpackage` linter because white-box tests are used
+    - mnd
     - testpackage
-
-issues:
-  exclude-use-default: false
-
-  exclude-rules:
-    # disable funlen linter for test funcs
-    - source: ^func\ Test.*$
-      path: _test\.go
-      linters:
-        - funlen
-
-    # disable lll linter for long strings in test funcs
-    - source: ^.*\ \[\]byte\(".*"\),$
-      path: _test\.go
-      linters:
-        - lll
-
-    # disable varnamelen linter for tt variable in test funcs
-    - source: ^\s*tt := tt$
-      path: _test\.go
-      linters:
-        - varnamelen
-
-    # disable revive linter for all lsp types
-    - source: ^.*$
-      path: lsp/*
-      linters:
-        - revive
+  settings:
+    depguard:
+      rules:
+        analysis:
+          list-mode: strict
+          files:
+            - '**/analysis/*.go'
+          allow:
+            - $gostd
+        codeactions:
+          list-mode: strict
+          files:
+            - '**/codeactions/*.go'
+          allow:
+            - $gostd
+            - github.com/chefe/copyrightlsp/analysis
+            - github.com/chefe/copyrightlsp/lsp
+            - github.com/chefe/copyrightlsp/state
+        diagnostics:
+          list-mode: strict
+          files:
+            - '**/diagnostics/*.go'
+          allow:
+            - $gostd
+            - github.com/chefe/copyrightlsp/analysis
+            - github.com/chefe/copyrightlsp/lsp
+            - github.com/chefe/copyrightlsp/state
+        lsp:
+          list-mode: strict
+          files:
+            - '**/lsp/*.go'
+          allow:
+            - $gostd
+        main:
+          list-mode: strict
+          files:
+            - $all
+            - '!**/analysis/*.go'
+            - '!**/codeactions/*.go'
+            - '!**/diagnostics/*.go'
+            - '!**/lsp/*.go'
+            - '!**/rpc/*.go'
+            - '!**/state/*.go'
+          allow:
+            - $gostd
+            - github.com/chefe/copyrightlsp/analysis
+            - github.com/chefe/copyrightlsp/lsp
+            - github.com/chefe/copyrightlsp/state
+            - github.com/chefe/copyrightlsp/diagnostics
+            - github.com/chefe/copyrightlsp/codeactions
+            - github.com/chefe/copyrightlsp/rpc
+        rpc:
+          list-mode: strict
+          files:
+            - '**/rpc/*.go'
+          allow:
+            - $gostd
+            - github.com/chefe/copyrightlsp/rpc
+        state:
+          list-mode: strict
+          files:
+            - '**/state/*.go'
+          allow:
+            - $gostd
+    gocritic:
+      disabled-checks:
+        - unnamedResult
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+        - experimental
+        - opinionated
+    misspell:
+      locale: US
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+      allow-unused: false
+  exclusions:
+    generated: lax
+    rules:
+      - linters:
+          - funlen
+        path: _test\.go
+        source: ^func\ Test.*$
+      - linters:
+          - lll
+        path: _test\.go
+        source: ^.*\ \[\]byte\(".*"\),$
+      - linters:
+          - varnamelen
+        path: _test\.go
+        source: ^\s*tt := tt$
+      - linters:
+          - revive
+        path: lsp/*
+        source: ^.*$
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

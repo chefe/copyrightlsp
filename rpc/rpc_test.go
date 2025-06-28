@@ -76,30 +76,28 @@ func TestDecodeMessage(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
-
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			message := []byte(strings.Join(tt.lines, "\r\n"))
+			message := []byte(strings.Join(test.lines, "\r\n"))
 
 			method, content, err := rpc.DecodeMessage(message)
 			if err != nil {
 				t.Fatalf("expected no error but got one: %s", err)
 			}
 
-			if method != tt.want.method {
-				t.Fatalf("method expected: '%s', got: '%s'", tt.want.method, method)
+			if method != test.want.method {
+				t.Fatalf("method expected: '%s', got: '%s'", test.want.method, method)
 			}
 
 			contentLength := len(content)
-			if contentLength != tt.want.contentLength {
-				t.Fatalf("content length expected: %d, got: %d", tt.want.contentLength, contentLength)
+			if contentLength != test.want.contentLength {
+				t.Fatalf("content length expected: %d, got: %d", test.want.contentLength, contentLength)
 			}
 
-			if string(content) != tt.want.content {
-				t.Fatalf("content expected: '%s', got: '%s'", tt.want.content, string(content))
+			if string(content) != test.want.content {
+				t.Fatalf("content expected: '%s', got: '%s'", test.want.content, string(content))
 			}
 		})
 	}
@@ -146,13 +144,11 @@ func TestDecodeMessageWithError(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
-
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			method, content, err := rpc.DecodeMessage(tt.message)
+			method, content, err := rpc.DecodeMessage(test.message)
 			if err == nil {
 				t.Fatal("expected error but got none")
 			}
@@ -227,27 +223,25 @@ func TestSplit(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
-
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			advance, message, err := rpc.Split(tt.input, false)
-			if tt.want.err && err == nil {
+			advance, message, err := rpc.Split(test.input, false)
+			if test.want.err && err == nil {
 				t.Fatal("expected error but got none")
 			}
 
-			if !tt.want.err && err != nil {
+			if !test.want.err && err != nil {
 				t.Fatalf("expected no error but got '%s'", err)
 			}
 
-			if advance != tt.want.advance {
-				t.Fatalf("advance expected: %d, got: '%d'", tt.want.advance, advance)
+			if advance != test.want.advance {
+				t.Fatalf("advance expected: %d, got: '%d'", test.want.advance, advance)
 			}
 
-			if !bytes.Equal(message, tt.want.message) {
-				t.Fatalf("message expected: '%s', got: '%s'", tt.want.message, message)
+			if !bytes.Equal(message, test.want.message) {
+				t.Fatalf("message expected: '%s', got: '%s'", test.want.message, message)
 			}
 		})
 	}

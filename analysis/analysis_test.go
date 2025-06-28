@@ -55,15 +55,13 @@ func TestMatchesTemplateLine(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
-
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := matchesTemplateLine(tt.line, tt.template)
-			if got != tt.want {
-				t.Fatalf("expected: %t, got: %t", tt.want, got)
+			got := matchesTemplateLine(test.line, test.template)
+			if got != test.want {
+				t.Fatalf("expected: %t, got: %t", test.want, got)
 			}
 		})
 	}
@@ -134,15 +132,13 @@ func TestContainsTemplateLines(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
-
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := containsTemplateLines(tt.lines, tt.template)
-			if got != tt.want {
-				t.Fatalf("expected: %t, got: %t", tt.want, got)
+			got := containsTemplateLines(test.lines, test.template)
+			if got != test.want {
+				t.Fatalf("expected: %t, got: %t", test.want, got)
 			}
 		})
 	}
@@ -202,15 +198,13 @@ func TestContainsCopyrightString(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		tt := tt
-
-		t.Run(tt.name, func(t *testing.T) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := ContainsCopyrightString(tt.content, tt.template, tt.searchRange)
-			if got != tt.want {
-				t.Fatalf("expected: %t, got: %t", tt.want, got)
+			got := ContainsCopyrightString(test.content, test.template, test.searchRange)
+			if got != test.want {
+				t.Fatalf("expected: %t, got: %t", test.want, got)
 			}
 		})
 	}
