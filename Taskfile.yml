@@ -1,0 +1,55 @@
+version: "3"
+
+tasks:
+  ci:
+    desc: Run all CI steps
+    deps: [lint, test, build]
+
+  lint:
+    desc: Run all linting steps
+    deps: [lint:shellcheck, lint:golangci-lint]
+
+  lint:golangci-lint:
+    internal: true
+    deps: [setup]
+    cmds:
+      - ./build/ext/bin/golangci-lint run ./...
+
+  lint:shellcheck:
+    internal: true
+    deps: [setup]
+    cmds:
+      - ./build/ext/bin/shellcheck --enable=all --severity=style .envrc scripts/*
+
+  test:
+    desc: Run all test
+    deps: [setup]
+    cmds:
+      - ./build/ext/bin/go test ./...
+
+  build:
+    desc: Build the binary
+    deps: [setup]
+    cmds:
+      - ./build/ext/bin/go build
+
+  setup:
+    desc: Install the toolchain for development on Linux
+    run: once
+    sources:
+      - ./scripts/setup_toolchain
+    cmds:
+      - ./scripts/setup_toolchain
+      - touch ./build/go.mod
+    generates:
+      - ./build/ext/bin/go
+      - ./build/ext/bin/gofmt
+      - ./build/ext/bin/golangci-lint
+      - ./build/ext/bin/shellcheck
+      - ./build/ext/bin/task
+      - ./build/go.mod
+
+  clean:
+    desc: Delete all build artifacts
+    cmds:
+      - rm -rf build
