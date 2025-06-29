@@ -4,17 +4,11 @@ type: docker
 name: default
 
 steps:
-  - name: lint
-    image: golangci/golangci-lint:latest
+  - name: default
+    image: debian:bullseye-slim
     commands:
-      - golangci-lint run ./...
-
-  - name: test
-    image: golang:latest
-    commands:
-      - go test ./...
-
-  - name: build
-    image: golang:latest
-    commands:
-      - go build -buildvcs=false
+      - apt-get update
+      - apt-get install -y --no-install-recommends ca-certificates curl make unzip xz-utils direnv
+      - ./scripts/setup_toolchain
+      - direnv allow
+      - direnv exec . task ci
